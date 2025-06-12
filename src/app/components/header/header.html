@@ -1,0 +1,16 @@
+<mat-toolbar color="primary">
+  <span>FileSimplifier</span>
+  <span class="spacer"></span>
+  <button *ngIf="requireLogin" mat-icon-button [matMenuTriggerFor]="profileMenu">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+  <button *ngIf="!requireLogin" mat-icon-button (click)="openProfileDialog()">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+  <mat-menu #profileMenu="matMenu" *ngIf="requireLogin">
+    <button mat-menu-item (click)="openProfileDialog()">Edit Profile</button>
+    <button mat-menu-item>Change Password</button>
+    <button mat-menu-item (click)="logout()">Logout</button>
+  </mat-menu>
+</mat-toolbar>
+<app-toast-notification *ngIf="toastMessage" [message]="toastMessage" (close)="toastMessage = ''"></app-toast-notification>

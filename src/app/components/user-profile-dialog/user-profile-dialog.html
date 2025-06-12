@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>Edit Profile</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="fill">
+    <mat-label>Name</mat-label>
+    <input matInput [(ngModel)]="name">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>New Password</mat-label>
+    <input matInput type="password" [(ngModel)]="password">
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()" mat-dialog-close>Save</button>
+</mat-dialog-actions>
