@@ -11,6 +11,9 @@
 /.angular/
 .angular/
 
+# Compiled output
+/dist-electron/
+
 # Node modules and dependency files
 /node_modules/
 /package-lock.json
