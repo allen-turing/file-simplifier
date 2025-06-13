@@ -11,7 +11,7 @@ function createWindow() {
       nodeIntegration: true,
       contextIsolation: false, // For IPC
     },
-    icon: path.join(__dirname, 'path/to/your/icon.ico')
+    icon: path.join(__dirname, '..','..','..','public','fileicon.png')
   });
 
   win.loadFile(path.join(__dirname, '..','..','..','dist','FileSimplifier','browser','index.html'));

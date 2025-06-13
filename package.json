@@ -49,10 +49,11 @@
     },
     "files": [
       "dist/**/*",
-      "electron-main.js"
+      "./src/app/services/electron-main.js"
     ],
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "icon": "./public/fileicon.png"
     },
     "win": {
       "target": "nsis"
