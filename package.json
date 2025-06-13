@@ -1,7 +1,7 @@
 {
   "name": "file-simplifier",
   "version": "0.0.0",
-  "main": "electron-main.js",
+  "main": "./src/app/services/electron-main.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

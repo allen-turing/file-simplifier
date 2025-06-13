@@ -10,10 +10,11 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false, // For IPC
-    }
+    },
+    icon: path.join(__dirname, 'path/to/your/icon.ico')
   });
 
-  win.loadFile(path.join(__dirname, 'dist/FileSimplifier/browser/index.html'));
+  win.loadFile(path.join(__dirname, '..','..','..','dist','FileSimplifier','browser','index.html'));
 }
 
 app.whenReady().then(createWindow);
@@ -35,7 +36,6 @@ ipcMain.handle('scan-directory', async (event, dirPath) => {
   try {
     return getAllFiles(dirPath);
   } catch (e) {
-    console.error('scan-directory error:', e);
     return { error: e.message };
   }
 });
@@ -45,7 +45,6 @@ ipcMain.handle('delete-file', async (event, filePath) => {
     fs.unlinkSync(filePath);
     return { success: true };
   } catch (e) {
-    console.error('delete-file error:', e);
     return { error: e.message };
   }
 });
@@ -53,23 +52,31 @@ ipcMain.handle('delete-file', async (event, filePath) => {
 function moveRecursiveSync(src, dest) {
   const stat = fs.statSync(src);
   if (stat.isDirectory()) {
-    if (fs.existsSync(dest)) {
-      // Remove destination directory recursively if it exists
-      fs.rmSync(dest, { recursive: true, force: true });
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true });
     }
-    fs.renameSync(src, dest);
+    for (const entry of fs.readdirSync(src)) {
+      const srcPath = path.join(src, entry);
+      const destPath = path.join(dest, entry);
+      moveRecursiveSync(srcPath, destPath);
+    }
+    fs.rmdirSync(src);
   } else {
-    fs.renameSync(src, dest);
+    const destDir = path.dirname(dest);
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
+    const destFilePath = path.join(dest, path.basename(src));
+    fs.renameSync(src, destFilePath);
   }
 }
 
 ipcMain.handle('move-file', async (event, src, dest) => {
   try {
     moveRecursiveSync(src, dest);
-    return { success: true };
+    return { success: true, message: 'File moved successfully' };
   } catch (e) {
-    console.error('move-file error:', e, 'src:', src, 'dest:', dest);
-    return { error: e.message };
+    return { success: false, error: e.message };
   }
 });
 
@@ -79,20 +86,20 @@ function copyRecursiveSync(src, dest) {
 
   const stat = fs.statSync(src);
   if (stat.isDirectory()) {
-    console.log("This is a directory:", src, "to", dest);
     if (!fs.existsSync(dest)) {
-        console.log("Creating directory:", dest);
-        fs.mkdirSync(dest);
+        fs.mkdirSync(dest, { recursive: true });
     }
     for (const entry of fs.readdirSync(src)) {
       const srcPath = path.join(src, entry);
       const destPath = path.join(dest, entry);
-      console.log("Copying from:", srcPath, "to", destPath);
       copyRecursiveSync(srcPath, destPath);
     }
   } else {
+    const destDir = path.dirname(dest);
+    if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+    }
     const destFilePath = path.join(dest, path.basename(src));
-    console.log("Not a Directory so Copying file:", src, "to", destFilePath);
     fs.copyFileSync(src, destFilePath);
   }
 }
@@ -100,10 +107,9 @@ function copyRecursiveSync(src, dest) {
 ipcMain.handle('copy-file', async (event, src, dest) => {
   try {
     copyRecursiveSync(src, dest);
-    return { success: true };
+    return { success: true, message: 'File copied successfully' };
   } catch (e) {
-    console.error('copy-file error:', e, 'src:', src, 'dest:', dest);
-    return { error: e.message };
+    return { success: false, error: e.message };
   }
 });
 
